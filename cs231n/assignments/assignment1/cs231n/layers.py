@@ -30,7 +30,7 @@ def affine_forward(x, w, b):
     
     #im = 1
     #dim *= x[i] for i in range(1, x.ndim+1)
-    X = x.reshape(x.shape[0], -1) #使用reshape(x, y, -1)，自动计算出剩余维的值。
+    X = x.reshape((x.shape[0], -1)) #使用reshape(x, y, -1)，自动计算出剩余维的值。
     out = X.dot(w) + b
 
     #x = 
