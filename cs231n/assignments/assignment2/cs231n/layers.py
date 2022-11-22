@@ -615,6 +615,7 @@ def conv_forward_naive(x, w, b, conv_param):
     assert (W + 2 * pad - WW) % stride == 0
     H_out = 1 + (H + 2 * pad - HH) // stride
     W_out = 1 + (W + 2 * pad - WW) // stride
+    #初始化out的形状
     out = np.zeros((N, F, H_out, W_out))
 
     w_row = w.reshape(F, C*HH*WW)
@@ -624,9 +625,11 @@ def conv_forward_naive(x, w, b, conv_param):
         col = 0
         for i in range(0, H_pad-HH+1, stride):
             for j in range(0, W_pad-WW+1, stride):
+                #将原x按照卷积神经元的形状，进行切分
                 x_col[:, col] = x_pad[index, :, i:i+HH, j:j+WW].reshape(C*HH*WW)
                 col += 1
         out[index] = (np.dot(w_row, x_col) + b.reshape(F, 1)).reshape(F, H_out, W_out)
+        #每一个x数据都要进行偏差处理。
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
@@ -675,9 +678,10 @@ def conv_backward_naive(dout, cache):
             db[f] += np.sum(dout[n, f])
             for i in range(H_out):
                 for j in range(W_out):
+                    #w 与 x的导数计算：
                     dw[f] += x_pad[n, :, i*stride:i*stride+HH, j*stride:j*stride+WW] * dout[n, f, i, j]
                     dx_pad[n, :, i*stride:i*stride+HH, j*stride:j*stride+WW] += w[f] * dout[n, f, i, j]
-
+    #将dx的padding去掉，还原为原形状。
     dx = dx_pad[:, :, pad:-pad, pad:-pad]
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
